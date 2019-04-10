@@ -38,7 +38,5 @@ func getParamFromEnv(env, defaultValue string) string {
 		param = defaultValue
 	}
 
-	fmt.Println(param)
-
 	return param
 }
