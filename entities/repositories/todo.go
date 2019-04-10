@@ -13,6 +13,10 @@ type TodoReposotory interface {
 type todoRepositoryImpl struct {
 }
 
+func NewTodoRepositoryImpl() todoRepositoryImpl {
+	return todoRepositoryImpl{}
+}
+
 func (repo todoRepositoryImpl) Save(
 	title string,
 	detail string,
@@ -31,8 +35,9 @@ func (repo todoRepositoryImpl) Save(
 func (repo todoRepositoryImpl) Get(
 	id uint64,
 ) (*models.Todo, error) {
-	var t *models.Todo
-	err := infra.DB.First(t, id).Error
+	t := &models.Todo{}
+	t.ID = id
+	err := infra.DB.First(t).Error
 	if err != nil {
 		return nil, err
 	}

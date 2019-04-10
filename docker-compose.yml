@@ -1,0 +1,37 @@
+version: '2.2'
+services:
+  mysql:
+    container_name: 'sample-db'
+    image: 'mysql:5.7.19'
+    ports:
+      - "3306:3306"
+    command: --innodb-use-native-aio=0
+    environment:
+      MYSQL_DATABASE: todo_dev
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: todo_dev_mysql
+    tty: true
+    volumes:
+      - ./db/sql:/docker-entrypoint-initdb.d
+
+  application:
+    container_name: 'sample-application'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      TODO_DB_HOST: mysql
+      TODO_DB_NAME: todo_dev
+      TODO_DB_PASSWORD: todo_dev_mysql
+      MYSQL_PORT: 3306
+    ports:
+      - "19003:19003"
+    depends_on:
+      - mysql
+  client:
+    container_name: 'sample-client'
+    build:
+      context: .
+      dockerfile: Dockerfile_client
+    depends_on:
+      - application
