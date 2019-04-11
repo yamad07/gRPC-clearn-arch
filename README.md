@@ -1,8 +1,8 @@
 # gRPC-sample
-GolangでgRPCを使ったマイクロサービスのためのテンプレートプロジェクト。ここにコードを書き足してマイクロサービスができていくと嬉しい。
+Template project for microservices using gRPC in Golang. Copy this code to create a new microservice.
 
 ## Usage
-とりあえず動かす。
+Run server
 ```
 docker-compose build
 # サーバーを立ち上げる
@@ -11,7 +11,7 @@ docker-compose up application
 docker-compose up client
 ```
 
-機能の追加は、gRPCを用いて`.proto`ファイルを作成し、それをもとに作成する。
+To add a function, create a `.proto` file and create go codes from it using gRPC.
 ```
 go get -u google.golang.org/grpc
 go get -u github.com/golang/protobuf/protoc-gen-go
@@ -22,17 +22,17 @@ cd proto
 
 protoc --go_out=plugins=grpc:../pb todo.proto
 ```
-インターフェースができたら、`controllers`レイヤーと`usecases`レイヤーに実装を書く。依存性の注入は`depin/injector.go`で行う。
+Once you have an interface using gRPC, write implementations in the `controllers` and` usecases` layers. The dependency injection is implemented in `depin / injector.go`.
 
 ## Layers
 
 ### controllers
-このレイヤーは、受け取ったリクエストを`usecase`レイヤーが許容する構造体にマッピングし、`usecase`レイヤーのメソッドを呼び出す。そして、`usecase`レイヤーが返してくれた構造体を、レスポンスにマッピングして返す。ビジネスロジック以外のところをやるところ。
+This layer maps the received request to a structure that the `usecase` layer allows, and calls the methods of the` usecase` layer. Then, the structure returned by the `usecase` layer is mapped to the response and returned. Where to do something other than business logic.
 
 ### usecases
-このレイヤーは、controllersから受け取った構造体をもとに`entity`レイヤーを呼び出しながらビジネスロジックを遂行し、値を返す。テストがしやすいように、ロジックだけがここに凝縮される。
+This layer executes business logic while calling the `entity` layer based on the structure received from controllers, and returns a value. Only logic is condensed here to make it easy to test.
 
 
 ### entities
-このレイヤーは、ドメインモデルの定義や操作を行う。ORマッパーを用いたデータ操作、永続化のロジックは全てここに凝縮され、このレイヤーは`usecase`レイヤーのみから呼ばれる。
+This layer defines and manipulates domain models. All the data manipulation and persistence logic using the OR mapper is condensed here, and this layer is called only from the `usecase` layer.
 
